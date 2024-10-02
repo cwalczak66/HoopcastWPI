@@ -2,6 +2,7 @@ from itertools import groupby
 
 import pandas as pd
 import numpy as np
+import random
 # Adjust pandas display settings to show all columns
 # pd.set_option('display.max_columns', None)  # Show all columns without truncation
 # pd.set_option('display.max_rows', None)     # Optional: Show all rows
@@ -12,36 +13,40 @@ import numpy as np
 
 def get_avgs(team_data):
     points = team_data['pts'].mean()
-    opp_points = team_data['pts_opp'].mean()
     fg_avg = team_data['fg'].mean()
-    fg_prob_avg = team_data['fg_prob'].mean()
+    fg_avg_prob = team_data['fg%'].mean()
+    threeP_avg = team_data['3p'].mean()
+    threeP_avg_prob = team_data['3p%'].mean()
+
+
 
 
 
     return {
         "points": points,
-        "opp_points": opp_points,
         "fg_avg": fg_avg,
-        "fg_prob_avg": fg_prob_avg
+        "fg_avg_prob": fg_avg_prob,
+        "threeP_avg": threeP_avg,
+        "threeP_avg_prob": threeP_avg_prob
 
     }
 
 
-def simulate_game(teamA_avgs,teamB_avgs,stats):
+def simulate_game(teamA_avgs,teamB_avgs):
 
-    tA_fg = np.random.normal(teamA_avgs['fg'],teamA_avgs['fg_prob'])
+    #teamA_fg = np.random.normal(teamA_avgs['fg'],teamA_avgs['fg_prob'])
+    teamA_fg_prob = teamA_avgs['fg_avg_prob']
+    teamA_3p_prob = teamA_avgs['threeP_avg_prob']
 
-    # print()
-    #
-    #
-    #
-    # print(f"SIMULATION: {teamA}:", teamA_sim_pts, "{teamB}:", teamB_sim_pts)
-    #
-    # if teamA_sim_pts > teamB_sim_pts:
-    #     return teamA
-    # else:
-    #     return teamB
-    pass
+    print("fg prob:", teamA_fg_prob, "3p prob:", teamA_3p_prob)
+
+    teamB_fg_prob = teamB_avgs['fg_avg_prob']
+    teamB_3p_prob = teamB_avgs['threeP_avg_prob']
+
+    teamA_shot_type = random.choices(['FG', '3PT'], weights=[teamA_fg_prob, teamA_3p_prob],k=1)[0]
+
+    print(teamA_shot_type)
+
 
 
 def monte_carlo(teamA,teamB,stats,sample_size):
@@ -64,7 +69,7 @@ def monte_carlo(teamA,teamB,stats,sample_size):
 #
 
 def target_team(t):
-    t["target"] = t["won"].shift(-1)
+    t["2p"] = t[""].shift(-1)
     return t
 
 # # Defining main function
@@ -83,8 +88,10 @@ def main():
     d2 = data[data["team"] == "BOS"]
 
 
-    print(d1)
-    print(d2)
+    teamA = get_avgs(d1)
+    teamB = get_avgs(d2)
+
+    simulate_game(teamA,teamB)
 
 
 
