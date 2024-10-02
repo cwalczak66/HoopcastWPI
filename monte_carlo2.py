@@ -2,62 +2,97 @@ from itertools import groupby
 
 import pandas as pd
 import numpy as np
+# Adjust pandas display settings to show all columns
+# pd.set_option('display.max_columns', None)  # Show all columns without truncation
+# pd.set_option('display.max_rows', None)     # Optional: Show all rows
+# pd.set_option('display.max_colwidth', None) # Optional: Show full width of each column
 
 
-#need to implement more complex monte carlo sim
-#
-# def simulate_game(teamA,teamB,stats):
-#     teamA_mean = stats.loc[teamA, "mean"]
-#     teamB_mean = stats.loc[teamB, "mean"]
-#     teamA_std = stats.loc[teamA, "std"]
-#     teamB_std = stats.loc[teamB, "std"]
-#
-#     print()
-#
-#     teamA_sim_pts = np.random.normal(teamA_mean, teamA_std)
-#     teamB_sim_pts = np.random.normal(teamB_mean, teamB_std)
-#
-#     print(f"SIMULATION: {teamA}:", teamA_sim_pts, "{teamB}:", teamB_sim_pts)
-#
-#     if teamA_sim_pts > teamB_sim_pts:
-#         return teamA
-#     else:
-#         return teamB
-#
-#
-# def monte_carlo(teamA,teamB,stats,sample_size):
-#     teamA_count = 0
-#     teamB_count = 0
-#     for i in range(sample_size):
-#         result = simulate_game(teamA,teamB,stats)
-#         if result == teamA:
-#             teamA_count += 1
-#         else:
-#             teamB_count += 1
-#
-#     teamA_prob = teamA_count / sample_size
-#     teamB_prob = teamB_count / sample_size
-#
-#     return teamA_prob, teamB_prob
+
+
+def get_avgs(team_data):
+    points = team_data['pts'].mean()
+    opp_points = team_data['pts_opp'].mean()
+    fg_avg = team_data['fg'].mean()
+    fg_prob_avg = team_data['fg_prob'].mean()
+
+
+
+    return {
+        "points": points,
+        "opp_points": opp_points,
+        "fg_avg": fg_avg,
+        "fg_prob_avg": fg_prob_avg
+
+    }
+
+
+def simulate_game(teamA_avgs,teamB_avgs,stats):
+
+    tA_fg = np.random.normal(teamA_avgs['fg'],teamA_avgs['fg_prob'])
+
+    # print()
+    #
+    #
+    #
+    # print(f"SIMULATION: {teamA}:", teamA_sim_pts, "{teamB}:", teamB_sim_pts)
+    #
+    # if teamA_sim_pts > teamB_sim_pts:
+    #     return teamA
+    # else:
+    #     return teamB
+    pass
+
+
+def monte_carlo(teamA,teamB,stats,sample_size):
+    teamA_count = 0
+    teamB_count = 0
+    for i in range(sample_size):
+        result = simulate_game(teamA,teamB,stats)
+        if result == teamA:
+            teamA_count += 1
+        else:
+            teamB_count += 1
+
+    teamA_prob = teamA_count / sample_size
+    teamB_prob = teamB_count / sample_size
+
+    return teamA_prob, teamB_prob
 #
 #
 #
 #
 
-def target_team(target_team):
-    target_team["target"] = target_team["won"].shift(-1)
-    return target_team
+def target_team(t):
+    t["target"] = t["won"].shift(-1)
+    return t
 
 # # Defining main function
 def main():
 
-
     # Load CSV data into a pandas DataFrame
     data = pd.read_csv('nba_games.csv')
+    print(list(data.columns))
 
-    data = data.groupby("team", group_keys=False).apply(target_team)
+    # data_group = data.groupby('team', group_keys=False)[['team', 'won','pts', 'team_opp', 'pts_opp']].apply(target_team)
 
-    print(data[data["team"] == "WAS"])
+    team_code = data.pop('team')  # Remove 'Team Code' and save it
+    data.insert(0, 'team', team_code)  # Insert 'Team Code' at the first position
+
+    d1 = data[data["team"] == "WAS"]
+    d2 = data[data["team"] == "BOS"]
+
+
+    print(d1)
+    print(d2)
+
+
+
+
+
+
+
+    # print(data[data["team"] == "WAS"])
 
 
     #
