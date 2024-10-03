@@ -37,22 +37,14 @@ def predict_winner_for_teams(season, team, team_opp):
     # Predict the probability of each team winning
     y_prob = model.predict_proba(game_data_encoded)
 
-    # Determine the predicted winner
+    # Determine the predicted winner and loser
     predicted_winner = team if y_pred[0] == 1 else team_opp
+    predicted_loser = team_opp if y_pred[0] == 1 else team
 
     # Calculate the probabilities for each team
     home_team_prob = y_prob[0][1] * 100  # Probability that the home team wins
     away_team_prob = y_prob[0][0] * 100  # Probability that the away team wins
 
-    # Print results
-    print(f"\nPrediction for {team} (home) vs {team_opp} (away) in season {season}:")
-    print(f"Predicted winner: {predicted_winner}")
-    print(f"{team} win probability: {home_team_prob:.2f}%")
-    print(f"{team_opp} win probability: {away_team_prob:.2f}%")
+    # Return the predicted winner, loser, and probabilities
+    return predicted_winner, predicted_loser, home_team_prob, away_team_prob
 
-# Get user input for the season and teams
-season = int(input("Enter the season (year): "))
-team = input("Enter the home team code (team): ").upper()
-team_opp = input("Enter the away team code (team_opp): ").upper()
-
-predict_winner_for_teams(season, team, team_opp)
