@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import SelectField, SubmitField
+from algorithms.poisson import poisson
 
 app = Flask(__name__)
 app.secret_key = "secret"
@@ -49,6 +50,13 @@ class TeamForm(FlaskForm):
     home_team = SelectField("Home Team", choices=[(team, team) for team in nba_teams])
     away_team = SelectField("Away Team", choices=[(team, team) for team in nba_teams])
     submit = SubmitField("Submit")
+    
+def algorithms(home_team, away_team):
+    # Poisson 
+    poisson_home_score, poisson_away_score = poisson(home_team, away_team)
+    poisson_str = f"{home_team} ({poisson_home_score}) vs {away_team} ({poisson_away_score})"
+    
+    return {"poisson": poisson_str}
 
 @app.route("/favicon.ico")
 def favicon():
@@ -66,7 +74,13 @@ def index():
             flash("You can\'t pick the same team for both teams.")
             return redirect(url_for("index"))
         
-        flash(f"{home_team} vs {away_team}")
-        return redirect(url_for("index"))
+        return redirect(url_for("predict", home=home_team, away=away_team, algs=algorithms(home_team, away_team)))
     
     return render_template("index.html", form=form)
+
+@app.route("/predict", methods=["GET", "POST"])
+def predict():
+    home_team = request.args.get("home")
+    away_team = request.args.get("away")
+    
+    return render_template("predict.html", home_team=home_team, away_team=away_team, algs=algorithms(home_team, away_team))

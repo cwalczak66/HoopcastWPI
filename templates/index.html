@@ -12,16 +12,7 @@
     <body>
         <h1>Hoopcast</h1>
         <p>Welcome to Hoopcast! Forecast your basketball games.</p>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
-
-                    {{ render_form(form) }}
-
-                    <p class="pt-5"><strong>{{ message }}</strong></p>
-                </div>
-            </div>
-        </div>
+        {{ render_form(form) }}
         {% with messages = get_flashed_messages() %} 
             {% if messages %} 
                 {% for message in messages %}
