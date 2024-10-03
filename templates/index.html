@@ -1,3 +1,5 @@
+{% from 'bootstrap5/form.html' import render_form %}
+
 <html>
     <head>
         <link
@@ -10,5 +12,34 @@
     <body>
         <h1>Hoopcast</h1>
         <p>Welcome to Hoopcast! Forecast your basketball games.</p>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+                    <h1 class="pt-5 pb-2">
+                        Welcome to the best movie actors Flask example!
+                    </h1>
+
+                    <p class="lead">
+                        This is the index page for an example Flask app using
+                        Bootstrap and WTForms. Note that
+                        <em>only 100 actors</em> are in the data source. Partial
+                        names are not valid.
+                    </p>
+
+                    {{ render_form(form) }}
+
+                    <p class="pt-5"><strong>{{ message }}</strong></p>
+                </div>
+            </div>
+        </div>
+        {% with messages = get_flashed_messages() %} 
+            {% if messages %} 
+                {% for message in messages %}
+                    <script>
+                        alert("{{ message }}");
+                    </script>
+                {% endfor %} 
+            {% endif %} 
+        {% endwith %}
     </body>
 </html>
