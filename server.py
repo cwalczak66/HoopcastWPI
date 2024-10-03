@@ -54,7 +54,6 @@ class TeamForm(FlaskForm):
 def favicon():
     return ""
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = TeamForm()
