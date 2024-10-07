@@ -23,11 +23,11 @@ def simulate_game(teamA,teamB,stats):
         return teamB
 
 
-def monte_carlo(teamA,teamB,stats,sample_size):
+def monte_carlo(teamA, teamB, stats, sample_size):
     teamA_count = 0
     teamB_count = 0
     for i in range(sample_size):
-        result = simulate_game(teamA,teamB,stats)
+        result = simulate_game(teamA, teamB, stats)
         if result == teamA:
             teamA_count += 1
         else:
@@ -39,34 +39,32 @@ def monte_carlo(teamA,teamB,stats,sample_size):
     return teamA_prob, teamB_prob
 
 
-
-
 # Defining main function
 def main():
 
-
     # Load CSV data into a pandas DataFrame
-    data = pd.read_csv('TestData2.csv')
+    data = pd.read_csv("data/TestData2.csv")
 
     print(data)
 
     # Display the first few rows to verify it's loaded correctly
-    teamA_points = data[['TeamA', 'PointsA']].rename(columns={"TeamA": "Team", "PointsA": "Points"})
-    teamB_points = data[['TeamB', 'PointsB']].rename(columns={"TeamB": "Team", "PointsB": "Points"})
-
-
+    teamA_points = data[["TeamA", "PointsA"]].rename(
+        columns={"TeamA": "Team", "PointsA": "Points"}
+    )
+    teamB_points = data[["TeamB", "PointsB"]].rename(
+        columns={"TeamB": "Team", "PointsB": "Points"}
+    )
 
     # # Combine both into one DataFrame
     all_teams_points = pd.concat([teamA_points, teamB_points])
 
-    team_stats = all_teams_points.groupby('Team')['Points'].agg(['mean', 'std'])
+    team_stats = all_teams_points.groupby("Team")["Points"].agg(["mean", "std"])
 
     print(team_stats)
 
     output = monte_carlo("Brooklyn Nets", "Chicago Bulls", team_stats, 10000)
 
     print(output)
-
 
 
 if __name__ == "__main__":

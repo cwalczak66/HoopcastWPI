@@ -1,0 +1,26 @@
+{% from 'bootstrap5/form.html' import render_form %}
+
+<html>
+    <head>
+        <link
+            rel="shortcut icon"
+            href="{{ url_for('static', filename='favicon.ico') }}"
+        />
+        <meta charset="utf-8" />
+        <title>Hoopcast</title>
+    </head>
+    <body>
+        <h1>Hoopcast</h1>
+        <p>Welcome to Hoopcast! Forecast your basketball games.</p>
+        {{ render_form(form) }}
+        {% with messages = get_flashed_messages() %} 
+            {% if messages %} 
+                {% for message in messages %}
+                    <script>
+                        alert("{{ message }}");
+                    </script>
+                {% endfor %} 
+            {% endif %} 
+        {% endwith %}
+    </body>
+</html>
