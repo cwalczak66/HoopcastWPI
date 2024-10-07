@@ -4,9 +4,9 @@ from sklearn.linear_model import LogisticRegression
 # Load the dataset
 df = pd.read_csv('LogisticRegression/nba_games_sorted_by_date.csv')
 
-def predict_winner_for_teams(season, team, team_opp):
-    # Filter the data for the given season
-    season_data = df[df['season'] == season].copy()
+def predict_winner_for_teams(team, team_opp):
+    # Filter the data for the seasons between 2016 and 2022
+    season_data = df[(df['season'] >= 2016) & (df['season'] <= 2022)].copy()
 
     season_data['date'] = pd.to_datetime(season_data['date'])
     season_data = season_data.sort_values(by='date').reset_index(drop=True)
@@ -18,7 +18,7 @@ def predict_winner_for_teams(season, team, team_opp):
     team_data_train = pd.get_dummies(season_data[['team', 'team_opp']])
     X_train = pd.concat([X_train, team_data_train], axis=1)
 
-    # Train the logistic regression model on the entire season
+    # Train the logistic regression model on the combined seasons
     model = LogisticRegression(max_iter=1000)
     model.fit(X_train, y_train)
 
@@ -47,4 +47,3 @@ def predict_winner_for_teams(season, team, team_opp):
 
     # Return the predicted winner, loser, and probabilities
     return predicted_winner, predicted_loser, home_team_prob, away_team_prob
-
