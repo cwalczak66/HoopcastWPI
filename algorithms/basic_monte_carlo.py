@@ -2,7 +2,9 @@ import pandas as pd
 import numpy as np
 
 
-def simulate_game(teamA, teamB, stats):
+#need to implement more complex monte carlo sim
+
+def simulate_game(teamA,teamB,stats):
     teamA_mean = stats.loc[teamA, "mean"]
     teamB_mean = stats.loc[teamB, "mean"]
     teamA_std = stats.loc[teamA, "std"]
@@ -60,7 +62,7 @@ def main():
 
     print(team_stats)
 
-    output = monte_carlo("Boston Celtics", "Brooklyn Nets", team_stats, 100)
+    output = monte_carlo("Brooklyn Nets", "Chicago Bulls", team_stats, 10000)
 
     print(output)
 
