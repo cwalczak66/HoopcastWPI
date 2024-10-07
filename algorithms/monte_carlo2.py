@@ -139,7 +139,7 @@ def monte_carlo(teamA_avgs, teamB_avgs, sample_size):
 
 # # Defining main function
 def main():
-    data2 = pd.read_csv('nba_games.csv')
+    data2 = pd.read_csv('data/nba_games.csv')
     # Filter the dataset for the 2023 season
     filtered_data = data2[data2['season'] == '2022']
 
@@ -149,7 +149,7 @@ def main():
 
 
 
-    data = pd.read_csv('nba_games.csv')
+    data = pd.read_csv('data/nba_games.csv')
 
 
 
