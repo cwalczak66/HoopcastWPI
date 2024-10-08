@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
 # Load the dataset
-df = pd.read_csv('LogisticRegression/nba_games_sorted_by_date.csv')
+df = pd.read_csv('algorithms/LogisticRegression/nba_games_sorted_by_date.csv')
 
 def predict_winner_for_teams(team, team_opp):
     # Filter the data for the seasons between 2016 and 2022

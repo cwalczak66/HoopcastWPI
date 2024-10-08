@@ -71,7 +71,7 @@ def main():
     
     # read in data to file (data aquired from DataQuest Machine Learning Tutorial)
     # sort data by data and reindex
-    data = pd.read_csv("nba_games.csv").sort_values("date").reset_index(drop=True)
+    data = pd.read_csv("data/nba_games.csv").sort_values("date").reset_index(drop=True)
     
     # remove extra columns
     del data["Unnamed: 0"]
