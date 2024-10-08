@@ -11,6 +11,41 @@ import random
 
 
 
+nba_teams_dict = {
+    "Atlanta Hawks": "ATL",
+    "Boston Celtics": "BOS",
+    "Brooklyn Nets": "BKN",
+    "Charlotte Hornets": "CHA",
+    "Chicago Bulls": "CHI",
+    "Cleveland Cavaliers": "CLE",
+    "Dallas Mavericks": "DAL",
+    "Denver Nuggets": "DEN",
+    "Detroit Pistons": "DET",
+    "Golden State Warriors": "GSW",
+    "Houston Rockets": "HOU",
+    "Indiana Pacers": "IND",
+    "Los Angeles Clippers": "LAC",
+    "Los Angeles Lakers": "LAL",
+    "Memphis Grizzlies": "MEM",
+    "Miami Heat": "MIA",
+    "Milwaukee Bucks": "MIL",
+    "Minnesota Timberwolves": "MIN",
+    "New Orleans Pelicans": "NOP",
+    "New York Knicks": "NYK",
+    "Oklahoma City Thunder": "OKC",
+    "Orlando Magic": "ORL",
+    "Philadelphia 76ers": "PHI",
+    "Phoenix Suns": "PHX",
+    "Portland Trail Blazers": "POR",
+    "Sacramento Kings": "SAC",
+    "San Antonio Spurs": "SAS",
+    "Toronto Raptors": "TOR",
+    "Utah Jazz": "UTA",
+    "Washington Wizards": "WAS"
+}
+
+
+
 def get_avgs(team_data):
     teamName = team_data['team']
     points = team_data['pts'].mean()
@@ -138,7 +173,12 @@ def monte_carlo(teamA_avgs, teamB_avgs, sample_size):
 
 
 # # Defining main function
-def main():
+def monte_carlo_prediction(teamA_input, teamB_input):
+
+
+    teamA = nba_teams_dict[teamA_input]
+    teamB = nba_teams_dict[teamB_input]
+
     data2 = pd.read_csv('nba_games.csv')
     # Filter the dataset for the 2023 season
     filtered_data = data2[data2['season'] == '2022']
@@ -154,9 +194,7 @@ def main():
 
 
 
-    # print("WELCOME TO NBA PREDICTION SIMULATION")
-    # teamA_input = input("Select Team 1:")
-    # teamB_input = input("Select Team 2:")
+
     # Load CSV data into a pandas DataFrame
 
 
@@ -180,54 +218,22 @@ def main():
 
 
     season_data = data[data['season'] == 2022]
-    season_data_copy = data[data['season'] == 2022]
+
     season_data.reset_index(inplace=True)
 
-    season_data = season_data.iloc[100:]
+
+    d1 = season_data[season_data["team"] == teamA]
+    d2 = season_data[season_data["team"] == teamB]
+
+    teamA_avgs = get_avgs(d1)
+    teamB_avgs = get_avgs(d2)
+
+
+    prediction = monte_carlo(teamA_avgs, teamB_avgs, 500)
 
 
 
-
-    first_100_rows = season_data_copy.iloc[:100]
-    print(first_100_rows)
-    team_info_list = first_100_rows[['team', 'team_opp', 'won']].apply(lambda row: (row['team'], row['team_opp'], row['won']),
-                                                             axis=1).tolist()
-
-
-    count = 0
-    for game in team_info_list:
-        teamA = game[0]
-        teamB = game[1]
-        game_result = game[2]
-        print(game_result)
-
-        d1 = season_data[season_data["team"] == teamA]
-        d2 = season_data[season_data["team"] == teamB]
-
-
-        teamA_avgs = get_avgs(d1)
-        teamB_avgs = get_avgs(d2)
-
-        # simulate_game(teamA,teamB)
+    print(f"{teamA}", prediction[0], f"{teamB}", prediction[1])
 
 
 
-        prediction = monte_carlo(teamA_avgs, teamB_avgs, 500)
-
-        prediction_bool = True
-        if prediction[0] < prediction[1]:
-            prediction_bool = False
-
-        if game_result and prediction_bool or not game_result and not prediction_bool:
-            count += 1
-
-
-
-        print(f"{teamA}", prediction[0], f"{teamB}", prediction[1])
-
-    print(count, "%")
-
-
-
-if __name__ == "__main__":
-    main()
