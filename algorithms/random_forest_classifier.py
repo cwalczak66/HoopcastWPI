@@ -168,6 +168,5 @@ def random_forest_classifier():
     # run new model
     predictions = backtest(full, rr, predictors)
     accuracy = accuracy_score(predictions["actual"], predictions["prediction"])
-    print(accuracy)
-
-    return predictions
+    
+    return accuracy

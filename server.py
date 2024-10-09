@@ -108,14 +108,14 @@ def algorithms(home_team, away_team):
     mc_str = f"{home_team} ({round(mc_home_prob, 2)}%) vs {away_team} ({round(mc_away_prob, 2)}%)"
     
     # Random Forest Classifier
-    # rc_result = random_forest_classifier()
-    # print(rc_result)
+    rfc_result = random_forest_classifier()
+    rfc_str = f"Accuracy of {round(rfc_result*100, 2)}%"
 
     return {
         "poisson": poisson_str,
         "logistic_regression": lr_str,
         "monte_carlo": mc_str,
-        "random_forest_classifier": None
+        "random_forest_classifier": rfc_str
     }
 
 
