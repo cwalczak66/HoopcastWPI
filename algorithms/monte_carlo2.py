@@ -179,17 +179,11 @@ def monte_carlo_prediction(teamA_input, teamB_input):
     teamA = nba_teams_dict[teamA_input]
     teamB = nba_teams_dict[teamB_input]
 
-    data2 = pd.read_csv('nba_games.csv')
-    # Filter the dataset for the 2023 season
-    filtered_data = data2[data2['season'] == '2022']
-
-    df1 = data2[data2["season"] == 2022]
 
 
 
 
-
-    data = pd.read_csv('nba_games.csv')
+    data = pd.read_csv('data/nba_games.csv')
 
 
 
@@ -233,7 +227,8 @@ def monte_carlo_prediction(teamA_input, teamB_input):
 
 
 
-    print(f"{teamA}", prediction[0], f"{teamB}", prediction[1])
+    prediction_str = f"{teamA}", prediction[0], f"{teamB}", prediction[1]
+    return prediction_str
 
 
 

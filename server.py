@@ -6,6 +6,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import SelectField, SubmitField
+
+from algorithms.monte_carlo2 import monte_carlo_prediction
 from algorithms.poisson import poisson
 
 app = Flask(__name__)
@@ -55,8 +57,13 @@ def algorithms(home_team, away_team):
     # Poisson 
     poisson_home_score, poisson_away_score = poisson(home_team, away_team)
     poisson_str = f"{home_team} ({poisson_home_score}) vs {away_team} ({poisson_away_score})"
+
+    mc_result = monte_carlo_prediction(home_team, away_team)
+    print(mc_result)
+
+
     
-    return {"poisson": poisson_str}
+    return {"poisson": poisson_str, "mc_result": mc_result}
 
 @app.route("/favicon.ico")
 def favicon():

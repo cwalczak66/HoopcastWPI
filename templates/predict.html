@@ -10,5 +10,12 @@
     <body>
         <h1>Hoopcast - {{ home_team }} vs {{ away_team }}</h1>
         <p>Poisson: {{ algs["poisson"] }}</p>
+        <p>Monte Carlo: {{ algs["mc_result"] }}</p>
+
+
+        <!-- Button to go back to the index.html page -->
+        <form action="{{ url_for('index') }}">
+            <button type="submit">Back to Home</button>
+        </form>
     </body>
 </html>
