@@ -7,7 +7,7 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import SelectField, SubmitField
 from algorithms.poisson import poisson
-from algorithms.LogisticRegression.LR_Season_Input_Teams import *
+from algorithms.logistic_regression import logistic_regression
 
 
 app = Flask(__name__)
@@ -88,15 +88,19 @@ class TeamForm(FlaskForm):
 
 
 def algorithms(home_team, away_team):
+    home_abr, away_abr = nba_teams_abbrev[home_team], nba_teams_abbrev[away_team]
+    
     # Poisson
     poisson_home_score, poisson_away_score = poisson(home_team, away_team)
     poisson_str = f"{home_team} ({poisson_home_score} pts) vs {away_team} ({poisson_away_score} pts)"
 
     # Logistic Regression
     lr_predicted_winner, lr_predicted_loser, lr_home_prob, lr_away_prob = (
-        predict_winner_for_teams(nba_teams_abbrev[home_team], nba_teams_abbrev[away_team])
+        logistic_regression(home_abr, away_abr)
     )
     lr_str = f"{home_team} ({round(lr_home_prob, 2)}%) vs {away_team} ({round(lr_away_prob, 2)}%)"
+    
+    
 
     return {"poisson": poisson_str, "logistic_regression": lr_str}
 
