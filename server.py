@@ -103,7 +103,7 @@ def algorithms(home_team, away_team):
     lr_str = f"{home_team} ({round(lr_home_prob, 2)}%) vs {away_team} ({round(lr_away_prob, 2)}%)"
     
     # Monte Carlo
-    mc_result = monte_carlo_prediction(home_team, away_team)
+    mc_result = monte_carlo_prediction(home_abr, away_abr)
 
     return {"poisson": poisson_str, "logistic_regression": lr_str, "monte_carlo": mc_result}
 
