@@ -6,6 +6,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import SelectField, SubmitField
+
+from algorithms.monte_carlo2 import monte_carlo_prediction
 from algorithms.poisson import poisson
 from algorithms.logistic_regression import logistic_regression
 
@@ -100,9 +102,10 @@ def algorithms(home_team, away_team):
     )
     lr_str = f"{home_team} ({round(lr_home_prob, 2)}%) vs {away_team} ({round(lr_away_prob, 2)}%)"
     
-    
+    # Monte Carlo
+    mc_result = monte_carlo_prediction(home_team, away_team)
 
-    return {"poisson": poisson_str, "logistic_regression": lr_str}
+    return {"poisson": poisson_str, "logistic_regression": lr_str, "monte_carlo": mc_result}
 
 
 @app.route("/favicon.ico")
