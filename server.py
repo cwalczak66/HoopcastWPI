@@ -7,9 +7,10 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import SelectField, SubmitField
 
-from algorithms.monte_carlo2 import monte_carlo_prediction
+from algorithms.monte_carlo import monte_carlo_prediction
 from algorithms.poisson import poisson
 from algorithms.logistic_regression import logistic_regression
+from algorithms.random_forest_classifier import random_forest_classifier
 
 
 app = Flask(__name__)
@@ -91,7 +92,7 @@ class TeamForm(FlaskForm):
 
 def algorithms(home_team, away_team):
     home_abr, away_abr = nba_teams_abbrev[home_team], nba_teams_abbrev[away_team]
-    
+
     # Poisson
     poisson_home_score, poisson_away_score = poisson(home_team, away_team)
     poisson_str = f"{home_team} ({poisson_home_score} pts) vs {away_team} ({poisson_away_score} pts)"
@@ -101,11 +102,21 @@ def algorithms(home_team, away_team):
         logistic_regression(home_abr, away_abr)
     )
     lr_str = f"{home_team} ({round(lr_home_prob, 2)}%) vs {away_team} ({round(lr_away_prob, 2)}%)"
-    
-    # Monte Carlo
-    mc_result = monte_carlo_prediction(home_abr, away_abr)
 
-    return {"poisson": poisson_str, "logistic_regression": lr_str, "monte_carlo": mc_result}
+    # Monte Carlo
+    mc_home_prob, mc_away_prob = monte_carlo_prediction(home_abr, away_abr)
+    mc_str = f"{home_team} ({round(mc_home_prob, 2)}%) vs {away_team} ({round(mc_away_prob, 2)}%)"
+    
+    # Random Forest Classifier
+    # rc_result = random_forest_classifier()
+    # print(rc_result)
+
+    return {
+        "poisson": poisson_str,
+        "logistic_regression": lr_str,
+        "monte_carlo": mc_str,
+        "random_forest_classifier": None
+    }
 
 
 @app.route("/favicon.ico")

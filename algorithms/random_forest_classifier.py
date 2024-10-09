@@ -69,7 +69,7 @@ def add_col(df, col_name):
     )
 
 
-def main():
+def random_forest_classifier():
     """
     Preparing Data for Model
     """
@@ -170,18 +170,4 @@ def main():
     accuracy = accuracy_score(predictions["actual"], predictions["prediction"])
     print(accuracy)
 
-
-if __name__ == "__main__":
-    main()
-
-
-"""
-Things to do to improve the model:
-    Try out different numbers of features or backward feature selection
-    Different Ratios of number of previous games
-    
-Predict Future Data:
-    Rescrape the box scores for the most recent data (overwrite the old file)
-    Rerun the model and add info for the next opponent, next date and whether the team will be home or away
-    and look for any values where the actual data is 2
-"""
+    return predictions
