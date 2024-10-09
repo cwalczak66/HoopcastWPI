@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
 
 # Load the dataset
-df = pd.read_csv('LogisticRegression/nba_games_sorted_by_date.csv')
+df = pd.read_csv('Algorithms/LogisticRegression/nba_games_sorted_by_date.csv')
 
 def predict_winner_for_teams(team, team_opp):
     # Filter the data for the seasons between 2016 and 2022
