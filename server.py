@@ -12,7 +12,7 @@ from algorithms.poisson import poisson
 from algorithms.logistic_regression import logistic_regression
 from algorithms.random_forest_classifier import random_forest_classifier
 
-from algorithms.LogisticRegression.LR_Season_Input_Teams import predict_winner_for_teams
+# from algorithms.LogisticRegression.LR_Season_Input_Teams import predict_winner_for_teams
 
 app = Flask(__name__)
 app.secret_key = "secret"
@@ -146,14 +146,14 @@ def algorithms(home_team, away_team):
     mc_str = f"{home_team} ({round(mc_home_prob, 2)}%) vs {away_team} ({round(mc_away_prob, 2)}%)"
     
     # Random Forest Classifier
-    rfc_result = random_forest_classifier()
-    rfc_str = f"Accuracy of {round(rfc_result*100, 2)}%"
+    # rfc_result = random_forest_classifier()
+    # rfc_str = f"Accuracy of {round(rfc_result*100, 2)}%"
 
     return {
         "poisson": poisson_str,
         "logistic_regression": lr_str,
         "monte_carlo": mc_str,
-        "random_forest_classifier": rfc_str
+        # "random_forest_classifier": rfc_str
     }
 
 
