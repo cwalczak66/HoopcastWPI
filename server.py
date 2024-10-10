@@ -6,7 +6,13 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import SelectField, SubmitField
+
+from algorithms.monte_carlo import monte_carlo_prediction
 from algorithms.poisson import poisson
+from algorithms.logistic_regression import logistic_regression
+from algorithms.random_forest_classifier import random_forest_classifier
+
+# from algorithms.LogisticRegression.LR_Season_Input_Teams import predict_winner_for_teams
 
 app = Flask(__name__)
 app.secret_key = "secret"
@@ -45,42 +51,149 @@ nba_teams = [
     "Utah Jazz",
     "Washington Wizards",
 ]
+nba_teams_abbrev = {
+    "Atlanta Hawks": "ATL",
+    "Boston Celtics": "BOS",
+    "Brooklyn Nets": "BRK",
+    "Charlotte Hornets": "CHO",
+    "Chicago Bulls": "CHI",
+    "Cleveland Cavaliers": "CLE",
+    "Dallas Mavericks": "DAL",
+    "Denver Nuggets": "DEN",
+    "Detroit Pistons": "DET",
+    "Golden State Warriors": "GSW",
+    "Houston Rockets": "HOU",
+    "Indiana Pacers": "IND",
+    "Los Angeles Clippers": "LAC",
+    "Los Angeles Lakers": "LAL",
+    "Memphis Grizzlies": "MEM",
+    "Miami Heat": "MIA",
+    "Milwaukee Bucks": "MIL",
+    "Minnesota Timberwolves": "MIN",
+    "New Orleans Pelicans": "NOP",
+    "New York Knicks": "NYK",
+    "Oklahoma City Thunder": "OKC",
+    "Orlando Magic": "ORL",
+    "Philadelphia 76ers": "PHI",
+    "Phoenix Suns": "PHO",
+    "Portland Trail Blazers": "POR",
+    "Sacramento Kings": "SAC",
+    "San Antonio Spurs": "SAS",
+    "Toronto Raptors": "TOR",
+    "Utah Jazz": "UTA",
+    "Washington Wizards": "WAS",
+}
+
+
+team_abbreviations = {
+    "Atlanta Hawks": "ATL",
+    "Boston Celtics": "BOS",
+    "Brooklyn Nets": "BKN",
+    "Charlotte Hornets": "CHA",
+    "Chicago Bulls": "CHI",
+    "Cleveland Cavaliers": "CLE",
+    "Dallas Mavericks": "DAL",
+    "Denver Nuggets": "DEN",
+    "Detroit Pistons": "DET",
+    "Golden State Warriors": "GSW",
+    "Houston Rockets": "HOU",
+    "Indiana Pacers": "IND",
+    "Los Angeles Clippers": "LAC",
+    "Los Angeles Lakers": "LAL",
+    "Memphis Grizzlies": "MEM",
+    "Miami Heat": "MIA",
+    "Milwaukee Bucks": "MIL",
+    "Minnesota Timberwolves": "MIN",
+    "New Orleans Pelicans": "NOP",
+    "New York Knicks": "NYK",
+    "Oklahoma City Thunder": "OKC",
+    "Orlando Magic": "ORL",
+    "Philadelphia 76ers": "PHI",
+    "Phoenix Suns": "PHX",
+    "Portland Trail Blazers": "POR",
+    "Sacramento Kings": "SAC",
+    "San Antonio Spurs": "SAS",
+    "Toronto Raptors": "TOR",
+    "Utah Jazz": "UTA",
+    "Washington Wizards": "WAS"
+}
+
+def get_team_abbreviation(full_name):
+    return team_abbreviations.get(full_name, "Unknown")
+
 
 class TeamForm(FlaskForm):
     home_team = SelectField("Home Team", choices=[(team, team) for team in nba_teams])
     away_team = SelectField("Away Team", choices=[(team, team) for team in nba_teams])
     submit = SubmitField("Submit")
-    
+
+
 def algorithms(home_team, away_team):
-    # Poisson 
+    home_abr, away_abr = nba_teams_abbrev[home_team], nba_teams_abbrev[away_team]
+
+    # Poisson
     poisson_home_score, poisson_away_score = poisson(home_team, away_team)
-    poisson_str = f"{home_team} ({poisson_home_score}) vs {away_team} ({poisson_away_score})"
+    poisson_str = f"{home_team} ({poisson_home_score} pts) vs {away_team} ({poisson_away_score} pts)"
+
+    # Logistic Regression
+    lr_predicted_winner, lr_predicted_loser, lr_home_prob, lr_away_prob = (
+        logistic_regression(home_abr, away_abr)
+    )
+    lr_str = f"{home_team} ({round(lr_home_prob, 2)}%) vs {away_team} ({round(lr_away_prob, 2)}%)"
+
+    # Monte Carlo
+    mc_home_prob, mc_away_prob = monte_carlo_prediction(home_abr, away_abr)
+    mc_str = f"{home_team} ({round(mc_home_prob, 2)}%) vs {away_team} ({round(mc_away_prob, 2)}%)"
     
-    return {"poisson": poisson_str}
+    # Random Forest Classifier
+    # rfc_result = random_forest_classifier()
+    # rfc_str = f"Accuracy of {round(rfc_result*100, 2)}%"
+
+    return {
+        "poisson": poisson_str,
+        "logistic_regression": lr_str,
+        "monte_carlo": mc_str,
+        # "random_forest_classifier": rfc_str
+    }
+
 
 @app.route("/favicon.ico")
 def favicon():
     return ""
 
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = TeamForm()
-    
+
     if form.validate_on_submit():
         home_team = form.home_team.data
         away_team = form.away_team.data
-        
+
         if home_team == away_team:
-            flash("You can\'t pick the same team for both teams.")
+            flash("You can't pick the same team for both teams.")
             return redirect(url_for("index"))
-        
-        return redirect(url_for("predict", home=home_team, away=away_team, algs=algorithms(home_team, away_team)))
-    
+
+        return redirect(
+            url_for(
+                "predict",
+                home=home_team,
+                away=away_team,
+                algs=algorithms(home_team, away_team),
+            )
+        )
+
     return render_template("index.html", form=form)
+
 
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
     home_team = request.args.get("home")
     away_team = request.args.get("away")
-    
-    return render_template("predict.html", home_team=home_team, away_team=away_team, algs=algorithms(home_team, away_team))
+
+    return render_template(
+        "predict.html",
+        home_team=home_team,
+        away_team=away_team,
+        algs=algorithms(home_team, away_team),
+    )
