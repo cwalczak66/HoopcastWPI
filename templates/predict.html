@@ -9,10 +9,12 @@
     </head>
     <body>
         <h1>Hoopcast - {{ home_team }} vs {{ away_team }}</h1>
-        <p>Poisson: {{ algs["poisson"] }}</p>
-        <p>Monte Carlo: {{ algs["mc_result"] }}</p>
-        <p>Logistic Regression: {{ algs["lr_str"] }}</p>
-
+        <p><strong>Poisson</strong>: {{ algs["poisson"] }}</p>
+        <p>
+            <strong>Logistic Regression</strong>: {{ algs["logistic_regression"]
+            }}
+        </p>
+        <p><strong>Monte Carlo</strong>: {{ algs["monte_carlo"] }}</p>
 
         <!-- Button to go back to the index.html page -->
         <form action="{{ url_for('index') }}">
