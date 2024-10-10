@@ -9,6 +9,7 @@ from wtforms import SelectField, SubmitField
 
 from algorithms.monte_carlo2 import monte_carlo_prediction
 from algorithms.poisson import poisson
+from algorithms.LogisticRegression.LR_Season_Input_Teams import predict_winner_for_teams
 
 app = Flask(__name__)
 app.secret_key = "secret"
@@ -48,22 +49,66 @@ nba_teams = [
     "Washington Wizards",
 ]
 
+team_abbreviations = {
+    "Atlanta Hawks": "ATL",
+    "Boston Celtics": "BOS",
+    "Brooklyn Nets": "BKN",
+    "Charlotte Hornets": "CHA",
+    "Chicago Bulls": "CHI",
+    "Cleveland Cavaliers": "CLE",
+    "Dallas Mavericks": "DAL",
+    "Denver Nuggets": "DEN",
+    "Detroit Pistons": "DET",
+    "Golden State Warriors": "GSW",
+    "Houston Rockets": "HOU",
+    "Indiana Pacers": "IND",
+    "Los Angeles Clippers": "LAC",
+    "Los Angeles Lakers": "LAL",
+    "Memphis Grizzlies": "MEM",
+    "Miami Heat": "MIA",
+    "Milwaukee Bucks": "MIL",
+    "Minnesota Timberwolves": "MIN",
+    "New Orleans Pelicans": "NOP",
+    "New York Knicks": "NYK",
+    "Oklahoma City Thunder": "OKC",
+    "Orlando Magic": "ORL",
+    "Philadelphia 76ers": "PHI",
+    "Phoenix Suns": "PHX",
+    "Portland Trail Blazers": "POR",
+    "Sacramento Kings": "SAC",
+    "San Antonio Spurs": "SAS",
+    "Toronto Raptors": "TOR",
+    "Utah Jazz": "UTA",
+    "Washington Wizards": "WAS"
+}
+
+def get_team_abbreviation(full_name):
+    return team_abbreviations.get(full_name, "Unknown")
+
+
 class TeamForm(FlaskForm):
     home_team = SelectField("Home Team", choices=[(team, team) for team in nba_teams])
     away_team = SelectField("Away Team", choices=[(team, team) for team in nba_teams])
     submit = SubmitField("Submit")
     
 def algorithms(home_team, away_team):
+    home_team_abbr = get_team_abbreviation(home_team)
+    away_team_abbr = get_team_abbreviation(away_team)
     # Poisson 
     poisson_home_score, poisson_away_score = poisson(home_team, away_team)
     poisson_str = f"{home_team} ({poisson_home_score}) vs {away_team} ({poisson_away_score})"
+
+    #Logistic Regression
+    predicted_winner, predicted_loser, home_prob, away_prob = predict_winner_for_teams(home_team_abbr, away_team_abbr)
+    lr_str = f"Winner: {predicted_winner}"
+    print(lr_str)
 
     mc_result = monte_carlo_prediction(home_team, away_team)
     print(mc_result)
 
 
     
-    return {"poisson": poisson_str, "mc_result": mc_result}
+    return {"poisson": poisson_str, "mc_result": mc_result, "lr": lr_str}
 
 @app.route("/favicon.ico")
 def favicon():

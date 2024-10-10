@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split, GridSearchCV
 
 # Load the dataset
 df = pd.read_csv('LogisticRegression/nba_games_sorted_by_date.csv')
@@ -14,59 +16,62 @@ def run_season_regression(season):
     season_data['date'] = pd.to_datetime(season_data['date'])
     season_data = season_data.sort_values(by='date')
 
-    # Perform the 80/20 split
-    split_index = int(0.8 * len(season_data))
-
-    # Prepare the training data (first 80%)
-    train_data = season_data.iloc[:split_index]
-
     # Use all features except those directly related to the outcome (won, team, team_opp, pts, total, etc.)
-    X_train = train_data.drop(columns=['won', 'team', 'team_opp', 'date', 'season', 'pts', 'pts_opp', 'total', 'total_opp'])
-    n = []
-    # One-hot encode the 'team' and 'team_opp' columns for training
-    team_data_train = pd.get_dummies(train_data[['team', 'team_opp']])
-    X_train = pd.concat([X_train, team_data_train], axis=1)
+    X = season_data.drop(columns=['won', 'team', 'team_opp', 'date', 'season', 'pts', 'pts_opp', 'total', 'total_opp'])
+    y = season_data['won']
 
-    # The target column is 'won'
-    y_train = train_data['won']
+    # One-hot encode the 'team' and 'team_opp' columns
+    team_data = pd.get_dummies(season_data[['team', 'team_opp']])
+    X = pd.concat([X, team_data], axis=1)
 
-    # Train the logistic regression model
-    model = LogisticRegression(max_iter=1000)
-    model.fit(X_train, y_train)
+    # Save the indices before the train-test split for later referencing
+    original_indices = season_data.index
 
-    # Prepare the test data (last 20%)
-    test_data = season_data.iloc[split_index:].copy()
+    # Perform train-test split and preserve the index
+    X_train, X_test, y_train, y_test, train_indices, test_indices = train_test_split(
+        X, y, original_indices, test_size=0.2, random_state=42
+    )
 
-    # Keep 'team', 'team_opp', 'date', 'season', and 'won' for the test data
-    y_test = test_data['won']
-    test_data = test_data[['team', 'team_opp', 'date', 'season', 'won']]
+    # Feature Scaling
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
 
-    # One-hot encode the 'team' and 'team_opp' columns in the test data
-    X_test = pd.get_dummies(test_data[['team', 'team_opp']])
-
-    # Ensure the test set has the same columns as the training set
-    X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
+    # Define the logistic regression model with hyperparameter tuning
+    param_grid = {
+        'C': [0.01, 0.1, 1, 10, 100],  # Regularization parameter
+        'solver': ['lbfgs', 'liblinear']  # Different solvers for logistic regression
+    }
+    model = GridSearchCV(LogisticRegression(max_iter=1000), param_grid, cv=5)
+    model.fit(X_train_scaled, y_train)
 
     # Predict the outcomes for the test set
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(X_test_scaled)
 
     # Calculate the accuracy of the model
     accuracy = accuracy_score(y_test, y_pred)
 
-    # Compare predicted results to actual results
-    print("\nResults for the test set:")
+    # Print the best parameters
+    # print(f"Best Hyperparameters: {model.best_params_}")
+
+    # # Compare predicted results to actual results
+    # print("\nResults for the test set:")
+    
+    # Use the stored indices to refer back to the original test data
+    test_data = season_data.loc[test_indices]
+    
     for i in range(len(y_pred)):
         row = test_data.iloc[i]
         predicted_winner = row['team'] if y_pred[i] == 1 else row['team_opp']
         actual_winner = row['team'] if row['won'] == 1 else row['team_opp']
 
-        print(f"Game {i + 1}: {row['team']} vs {row['team_opp']}")
-        print(f"Predicted winner: {predicted_winner}, Actual winner: {actual_winner}")
-        print('-' * 40)
+        # print(f"Game {i + 1}: {row['team']} vs {row['team_opp']}")
+        # print(f"Predicted winner: {predicted_winner}, Actual winner: {actual_winner}")
+        # print('-' * 40)
 
     # Print overall accuracy
     print(f"\nOverall Accuracy for season {season}: {accuracy * 100:.2f}%")
 
 # Example usage:
-season = int(input("Enter the season (year): "))
-run_season_regression(season)
+for season in range(2016, 2023):
+    run_season_regression(season)
