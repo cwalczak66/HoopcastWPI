@@ -197,3 +197,15 @@ def predict():
         away_team=away_team,
         algs=algorithms(home_team, away_team),
     )
+    
+@app.route("/rfc", methods=["GET", "POST"])
+def rfc():
+    home_team = request.args.get("home")
+    away_team = request.args.get("away")
+
+    return render_template(
+        "rfc.html",
+        home_team=home_team,
+        away_team=away_team,
+        rfc=str(random_forest_classifier()),
+    )
