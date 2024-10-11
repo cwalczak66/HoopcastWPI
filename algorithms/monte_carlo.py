@@ -72,9 +72,7 @@ def game_possession(
 
 
 def simulate_game(teamA_avgs, teamB_avgs):
-
-    # teamA_fg = np.random.normal(teamA_avgs['fg'],teamA_avgs['fg_prob'])
-
+    """game simulation"""
     teamA_score = 0
 
     teamA_2p_prob = teamA_avgs["twoP_avg_prob"]
@@ -143,13 +141,11 @@ def monte_carlo(teamA_avgs, teamB_avgs, sample_size):
 
 # # Defining main function
 def monte_carlo_prediction(teamA, teamB):
-
+    """parsing and filtering data"""
     data = pd.read_csv("data/nba_games.csv")
 
-    # Load CSV data into a pandas DataFrame
-
-    team_code = data.pop("team")  # Remove 'Team Code' and save it
-    data.insert(0, "team", team_code)  # Insert 'Team Code' at the first position
+    team_code = data.pop("team")
+    data.insert(0, "team", team_code)
 
     data.loc[:, "fg"] = data["fg"].fillna(0)
     data.loc[:, "3p"] = data["3p"].fillna(0)
