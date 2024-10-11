@@ -125,7 +125,7 @@ def get_team_abbreviation(full_name):
 class TeamForm(FlaskForm):
     home_team = SelectField("Home Team", choices=[(team, team) for team in nba_teams])
     away_team = SelectField("Away Team", choices=[(team, team) for team in nba_teams])
-    submit = SubmitField("Submit")
+    submit = SubmitField("Submit (takes a long time to load)")
 
 
 def algorithms(home_team, away_team):
