@@ -196,6 +196,7 @@ def predict():
         home_team=home_team,
         away_team=away_team,
         algs=algorithms(home_team, away_team),
+        random_forest_classifier=random_forest_classifier,
     )
     
 @app.route("/rfc", methods=["GET", "POST"])
